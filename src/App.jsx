@@ -1,27 +1,10 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom'; // Import Routes and Route
+import { Routes, Route } from 'react-router-dom'; // Keep Routes and Route
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/layout/Navbar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
-// At the top, import the new page
-import RegisterPage from './pages/auth/RegisterPage';
-
-// ... inside the AppRoutes component
-const AppRoutes = () => {
-  const path = window.location.pathname;
-  switch (path) {
-    case '/':
-      return <HomePage />;
-    case '/login':
-      return <LoginPage />;
-    case '/register': // Add this new case
-      return <RegisterPage />;
-    // ... other routes
-    default:
-      return <HomePage />;
-  }
-};
+import RegisterPage from './pages/auth/RegisterPage'; // Import the new page
 
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
@@ -31,14 +14,18 @@ const Footer = () => (
   </footer>
 );
 
-
 function App() {
   return (
     <AuthProvider>
       <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
         <Navbar />
         <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <AppRoutes />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            {/* Add more routes here as needed */}
+          </Routes>
         </main>
         <Footer />
       </div>
