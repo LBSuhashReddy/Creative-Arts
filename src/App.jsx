@@ -27,8 +27,10 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/artists" element={<Artists />} />
-            <Route path="/exhibition" element={<Exhibition />} />
             {/* Add more routes here as needed */}
+            <Route path="/artists" element={<Artists />} />
+            <Route path="/exhibition" element={<ExhibitionPage />} />
+
           </Routes>
         </main>
         <Footer />
