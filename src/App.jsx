@@ -7,6 +7,7 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage'; // Import the new page
 import ExhibitionPage from './pages/ExhibitionPage';
 import Artists from './pages/Artists';
+
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
@@ -25,7 +26,11 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/artists" element={<Artists />} />
             {/* Add more routes here as needed */}
+            <Route path="/artists" element={<Artists />} />
+            <Route path="/exhibition" element={<ExhibitionPage />} />
+
           </Routes>
         </main>
         <Footer />
