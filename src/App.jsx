@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage'; // Import the new page
 import Artists from './pages/Artists';
-import Exhibition from './pages/ExhibitionPage';
+import ExhibitionPage from './pages/ExhibitionPage'
 
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
