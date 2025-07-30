@@ -1,11 +1,18 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import './Navbar.css'; // Step 1: Make sure the CSS file is imported.
+import './Navbar.css'; // Make sure the CSS file is imported.
+
+// --- Helper Icons for the Navbar ---
+const UserIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
 
 const Navbar = () => {
   const { currentUser, logout } = useAuth();
 
-  // Step 2: Use the class names from Navbar.css instead of Tailwind classes.
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -18,11 +25,15 @@ const Navbar = () => {
             <a href="/exhibition" className="navbar-link">Exhibition</a>
             <a href="/artists" className="navbar-link">Artists</a>
             <a href="/events" className="navbar-link">Events</a>
+            
+            {/* Conditional rendering for logged-in users */}
             {currentUser ? (
-              <>
-                <a href="/profile" className="navbar-link">Profile</a>
+              <div className="flex items-center space-x-2">
+                <a href="/profile" className="navbar-icon-link" aria-label="Profile">
+                  <UserIcon />
+                </a>
                 <button onClick={logout} className="navbar-button">Logout</button>
-              </>
+              </div>
             ) : (
               <a href="/login" className="navbar-button">Login</a>
             )}

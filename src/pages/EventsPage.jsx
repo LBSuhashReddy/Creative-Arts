@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import SearchBar from '../components/common/SearchBar'; // Import the SearchBar
 
 // --- Helper Icons (re-used from previous version) ---
 const CalendarIcon = () => (
@@ -100,38 +101,63 @@ const TimelineSlider = ({ minDate, maxDate, value, onChange }) => {
 
 // --- EventCard Component ---
 const EventCard = ({ event }) => {
-    // Determine if the event is in the past
     const isPast = new Date(event.date) < new Date();
+    const categoryStyles = {
+        Workshop: 'bg-blue-100 text-blue-800',
+        Exhibition: 'bg-purple-100 text-purple-800',
+        Talk: 'bg-green-100 text-green-800',
+        Activity: 'bg-yellow-100 text-yellow-800',
+    };
 
     return (
-        <div className="bg-white rounded-xl shadow-md overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-            <img className="w-full h-48 object-cover" src={event.imageUrl} alt={event.title} />
-            <div className="p-5 flex flex-col h-full">
-                <h3 className="text-lg font-bold text-gray-800">{event.title}</h3>
-                <div className="flex items-center text-sm text-gray-600 mt-2">
-                    <CalendarIcon />
-                    <span className="ml-2">{new Date(event.date).toLocaleDateString()}</span>
+        <div className="relative group overflow-hidden rounded-2xl shadow-lg bg-white transition-all duration-500 ease-in-out transform hover:shadow-2xl hover:-translate-y-2">
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl blur-lg opacity-0 group-hover:opacity-60 group-hover:duration-200 transition-all duration-1000"></div>
+            <div className="relative bg-white rounded-2xl overflow-hidden">
+                <div className="overflow-hidden">
+                    <img
+                        src={event.imageUrl}
+                        alt={event.title}
+                        className="w-full h-48 object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                    />
+                    <div className={`absolute top-3 right-3 px-2 py-1 text-xs font-semibold rounded-full ${categoryStyles[event.category] || 'bg-gray-100 text-gray-800'} transition-all duration-300 group-hover:scale-110`}>
+                        {event.category}
+                    </div>
                 </div>
-                <p className="text-gray-700 mt-2 text-sm flex-grow">{event.description}</p>
-                {/* Conditional Button Rendering */}
-                <button
-                    className={`w-full mt-4 py-2 px-4 rounded-lg font-semibold text-white transition-all duration-300 ${
-                        isPast 
-                        ? 'bg-gray-400 hover:bg-gray-500' 
-                        : 'bg-indigo-600 hover:bg-indigo-700'
-                    }`}
-                >
-                    {isPast ? 'View' : 'Register'}
-                </button>
+                
+                <div className="absolute inset-0 bg-black bg-opacity-20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out flex items-center justify-center">
+                    <button
+                        className={`px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300 transform hover:scale-105 ${
+                            isPast 
+                            ? 'bg-gray-500 hover:bg-gray-600' 
+                            : 'bg-indigo-600 hover:bg-indigo-700'
+                        }`}
+                    >
+                        {isPast ? 'View Details' : 'Register Now'}
+                    </button>
+                </div>
+
+                <div className="p-5">
+                    <h3 className="text-xl font-bold text-gray-800 truncate">{event.title}</h3>
+                    <div className="flex items-center text-sm text-gray-600 mt-2">
+                        <CalendarIcon />
+                        <span className="ml-2">{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span>
+                    </div>
+                     <div className="flex items-center text-sm text-gray-600 mt-1">
+                        <MapPinIcon />
+                        <span className="ml-2 truncate">{event.location}</span>
+                    </div>
+                </div>
             </div>
         </div>
     );
 };
 
+
 // --- EventsPage Component ---
 const EventsPage = () => {
     const [sliderValue, setSliderValue] = useState(0);
     const [filter, setFilter] = useState('Upcoming');
+    const [searchQuery, setSearchQuery] = useState(''); // New state for search
     const eventRefs = useRef({});
 
     const now = new Date();
@@ -142,10 +168,14 @@ const EventsPage = () => {
             if (filter === 'Past') return eventDate < now;
             return true;
         })
+        .filter(event => // Add search filtering
+            event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            event.category.toLowerCase().includes(searchQuery.toLowerCase())
+        )
         .sort((a, b) => {
              return filter === 'Past' 
-                ? new Date(b.date) - new Date(a.date) // For past events, show most recent first
-                : new Date(a.date) - new Date(b.date); // For upcoming/all, show oldest first
+                ? new Date(b.date) - new Date(a.date) 
+                : new Date(a.date) - new Date(b.date);
         });
 
     const minDate = sortedEvents.length > 0 ? new Date(sortedEvents[0].date) : null;
@@ -201,23 +231,31 @@ const EventsPage = () => {
             <div className="container mx-auto px-4">
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-extrabold text-gray-900">Club Events</h1>
-                    <p className="text-lg text-gray-600 mt-2">Drag the timeline to explore our events.</p>
+                    <p className="text-lg text-gray-600 mt-2">Filter and search through our workshops, exhibitions, and talks.</p>
                 </div>
                 
                 <div className="sticky top-0 z-10 py-4 bg-gray-50/80 backdrop-blur-sm">
                     <div className="w-full max-w-4xl mx-auto p-4 bg-white rounded-2xl shadow-lg">
+                        <div className="px-8">
+                            <SearchBar 
+                                placeholder="Search by event or category..."
+                                value={searchQuery}
+                                onChange={setSearchQuery}
+                            />
+                        </div>
                         <div className="flex justify-center items-center space-x-4 mb-4">
-                            {/* Changed Order */}
                             <FilterButton value="All" label="All Events" />
                             <FilterButton value="Past" label="Past" />
                             <FilterButton value="Upcoming" label="Upcoming" />
                         </div>
-                        <TimelineSlider
-                            minDate={minDate}
-                            maxDate={maxDate}
-                            value={sliderValue}
-                            onChange={setSliderValue}
-                        />
+                        {sortedEvents.length > 0 && (
+                            <TimelineSlider
+                                minDate={minDate}
+                                maxDate={maxDate}
+                                value={sliderValue}
+                                onChange={setSliderValue}
+                            />
+                        )}
                     </div>
                 </div>
 
@@ -230,7 +268,8 @@ const EventsPage = () => {
                         ))
                     ) : (
                         <div className="col-span-full text-center py-10">
-                            <h2 className="text-2xl font-semibold text-gray-700">No {filter.toLowerCase()} events found.</h2>
+                            <h2 className="text-2xl font-semibold text-gray-700">No events found.</h2>
+                            <p className="text-gray-500 mt-2">Try adjusting your filters or search terms.</p>
                         </div>
                     )}
                 </div>
