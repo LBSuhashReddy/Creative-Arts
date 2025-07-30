@@ -70,3 +70,23 @@
 .navbar-button:hover {
   background-color: #4338ca; /* Indigo 700 */
 }
+.navbar-icon-link {
+  color: #4b5563; /* Gray 600 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem; /* 8px */
+  border-radius: 9999px; /* Makes the background a circle */
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.navbar-icon-link:hover {
+  background-color: #f3f4f6; /* Gray 100 */
+  color: #4f46e5; /* Indigo 600 */
+}
+
+/* This targets the SVG element inside the link */
+.navbar-icon-link svg {
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
+}

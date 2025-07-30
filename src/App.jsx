@@ -8,6 +8,7 @@ import RegisterPage from './pages/auth/RegisterPage'; // Import the new page
 import Artists from './pages/ArtistsPage';
 import ExhibitionPage from './pages/ExhibitionPage'
 import EventsPage from './pages/EventsPage'
+import ProfilePage from './pages/user/ProfilePage'
 import ArtistProfilePage from './pages/ArtistProfilePage';
 
 const Footer = () => (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/artist/:artistId" element={<ArtistProfilePage />} />
             <Route path="/exhibition" element={<ExhibitionPage />} />
             <Route path="/events" element={<EventsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
 
           </Routes>
         </main>
