@@ -19,10 +19,9 @@ const Navbar = () => {
   const handleLogout = async () => {
         try {
             await logout();
-            navigate('/'); // Use navigate for redirection
+            navigate('/'); 
         } catch (error) {
             console.error("Failed to log out", error);
-            // Optionally, show an error message to the user
         }
     };
 

@@ -1,40 +1,32 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import ArtCard from '../components/specific/ArtCard'; // Step 1: Import the reusable ArtCard
 
-// --- Reusable ArtCard Component (can be moved to its own file) ---
-const ArtCard = ({ imageUrl, title }) => (
-  <div className="relative group overflow-hidden rounded-2xl shadow-lg bg-white transition-all duration-500 ease-in-out transform hover:shadow-2xl hover:-translate-y-2">
-    <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl blur-lg opacity-0 group-hover:opacity-60 group-hover:duration-200 transition-all duration-1000"></div>
-    <div className="relative bg-white rounded-2xl overflow-hidden">
-      <img
-        src={imageUrl}
-        alt={title}
-        className="w-full h-64 object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
-      />
-      <div className="absolute inset-0 bg-black bg-opacity-10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out flex items-end p-4">
-        <h3 className="text-white text-lg font-bold">{title}</h3>
-      </div>
-    </div>
-  </div>
-);
-
-
-// --- Placeholder Data ---
-const artistData = {
-  name: 'Jojo',
-  domain: 'Suhas', // As per the image, though this might mean 'Painting', 'Sculpture' etc.
-  phone: '1234567890',
-  email: 'jojo@email.com',
-  quote: 'Art is not perfect. If it is perfect then it is not art.',
-  avatarUrl: 'https://placehold.co/200x200/e2e8f0/e2e8f0', // Placeholder image
-  artworks: [
-    { id: 1, title: 'Crimson Bloom', imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800' },
-    { id: 2, title: 'Azure Depths', imageUrl: 'https://images.unsplash.com/photo-1552353289-97f993ea0846?w=800' },
-    { id: 3, title: 'Golden Solitude', imageUrl: 'https://images.unsplash.com/photo-1531913423379-61763315a05f?w=800' },
-  ]
+// --- Placeholder Database ---
+// This object simulates your database, mapping IDs to artist data.
+const allArtistsData = {
+  '1': { name: 'Suhas Kumar', domain: 'Digital Art', phone: '111-222-3333', email: 'suhas@email.com', quote: 'Art is a line around your thoughts.', avatarUrl: 'https://images.unsplash.com/photo-1557862921-37829c790f19?q=80&w=2071&auto=format&fit=crop', artworks: [ { id: 1, title: 'Crimson Bloom', imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800' }] },
+  '2': { name: 'Priya Sharma', domain: 'Photography', phone: '444-555-6666', email: 'priya@email.com', quote: 'Capturing moments from today, creating memories for tomorrow.', avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1887&auto=format&fit=crop', artworks: [ { id: 2, title: 'Azure Depths', imageUrl: 'https://images.unsplash.com/photo-1552353289-97f993ea0846?w=800' }] },
+  '3': { name: 'Raj Patel', domain: 'Sculpture', phone: '777-888-9999', email: 'raj@email.com', quote: 'Giving form to ideas, one piece at a time.', avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1887&auto=format&fit=crop', artworks: [ { id: 3, title: 'Golden Solitude', imageUrl: 'https://images.unsplash.com/photo-1531913423379-61763315a05f?w=800' }] },
+  '4': { name: 'Aisha Khan', designation: 'Alumni', domain: 'Illustrator', phone: '123-456-7890', email: 'aisha@email.com', quote: 'Drawing worlds with a single stroke.', avatarUrl: 'https://i.pravatar.cc/150?u=aisha', artworks: [] },
+  '5': { name: 'Leo Rivera', designation: 'Member', domain: 'Sculptor', phone: '098-765-4321', email: 'leo@email.com', quote: 'Finding the art within the stone.', avatarUrl: 'https://i.pravatar.cc/150?u=leo', artworks: [] },
 };
+
 
 // --- ArtistPage Component ---
 const ArtistProfilePage = () => {
+  const { artistId } = useParams();
+  const artistData = allArtistsData[artistId];
+
+  if (!artistData) {
+    return (
+      <div className="text-center py-20">
+        <h2 className="text-3xl font-bold text-gray-700">Artist Not Found</h2>
+        <p className="text-gray-500 mt-2">Please check the URL and try again.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
@@ -85,9 +77,20 @@ const ArtistProfilePage = () => {
             </h2>
           </div>
           
+          {/* Step 2: Use the imported ArtCard component */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {artistData.artworks.map(art => (
-              <ArtCard key={art.id} imageUrl={art.imageUrl} title={art.title} />
+              <ArtCard 
+                key={art.id} 
+                imageUrl={art.imageUrl} 
+                title={art.title}
+                // Pass other props if needed by the advanced card
+                artistName={artistData.name}
+                artistAvatarUrl={artistData.avatarUrl}
+                onViewDetails={() => alert(`Viewing details for ${art.title}`)}
+                onAddToWishlist={() => alert(`${art.title} added to wishlist!`)}
+                onInquire={() => alert(`Inquiring about ${art.title}`)}
+              />
             ))}
           </div>
 

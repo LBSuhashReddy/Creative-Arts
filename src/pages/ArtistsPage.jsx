@@ -2,22 +2,22 @@
 
 import React, { useState } from 'react';
 import SearchBar from '../components/common/SearchBar';
-
+import ArtistCard from '../components/specific/ArtistCard';
 // --- ArtistCard Component (specific to this page) ---
-const ArtistCard = ({ name, designation, domain, imageUrl, profileUrl }) => (
-    <div className="bg-white rounded-lg shadow-md p-6 text-center transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-        <img src={imageUrl} alt={name} className="w-24 h-24 mx-auto rounded-full mb-4 border-4 border-gray-200 object-cover" />
-        <h3 className="text-xl font-bold text-gray-800">{name}</h3>
-        <p className="text-md font-medium text-gray-500">{designation}</p>
-        <p className="text-indigo-600 font-semibold mt-1">{domain}</p>
-        <a 
-            href={profileUrl || '#'} 
-            className="mt-4 inline-block bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-300 transition-colors"
-        >
-            View Profile
-        </a>
-    </div>
-);
+// const ArtistCard = ({ name, designation, domain, imageUrl, profileUrl }) => (
+//     <div className="bg-white rounded-lg shadow-md p-6 text-center transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+//         <img src={imageUrl} alt={name} className="w-24 h-24 mx-auto rounded-full mb-4 border-4 border-gray-200 object-cover" />
+//         <h3 className="text-xl font-bold text-gray-800">{name}</h3>
+//         <p className="text-md font-medium text-gray-500">{designation}</p>
+//         <p className="text-indigo-600 font-semibold mt-1">{domain}</p>
+//         <a 
+//             href={profileUrl || '#'} 
+//             className="mt-4 inline-block bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-300 transition-colors"
+//         >
+//             View Profile
+//         </a>
+//     </div>
+// );
 
 
 // --- Manual Artist Data (from your provided code) ---
@@ -75,6 +75,7 @@ const ArtistsDirectoryPage = () => {
                     {filteredArtists.map((artist) => (
                         <ArtistCard
                           key={artist.id}
+                          id = {artist.id}
                           name={artist.name}
                           designation={artist.designation}
                           domain={artist.domain}
