@@ -5,8 +5,9 @@ import Navbar from './components/layout/Navbar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage'; // Import the new page
-import Artists from './pages/Artists';
+import Artists from './pages/ArtistsPage';
 import ExhibitionPage from './pages/ExhibitionPage'
+import EventsPage from './pages/EventsPage'
 
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
@@ -30,6 +31,7 @@ function App() {
             {/* Add more routes here as needed */}
             <Route path="/artists" element={<Artists />} />
             <Route path="/exhibition" element={<ExhibitionPage />} />
+            <Route path="/events" element={<EventsPage />} />
 
           </Routes>
         </main>
