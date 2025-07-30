@@ -39,6 +39,17 @@ const ProfilePage = () => {
     const [activeTab, setActiveTab] = useState('Posts'); // 'Posts' or 'Wishlist'
 
     // --- Manual Data for demonstration ---
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/'); // Use navigate for redirection
+        } catch (error) {
+            console.error("Failed to log out", error);
+            // Optionally, show an error message to the user
+        }
+    };
+
     const userPosts = [
         { id: 1, title: 'My First Masterpiece', imageUrl: 'https://images.unsplash.com/photo-1547891654-e66ed711b999?w=800' },
         { id: 2, title: 'City at Night', imageUrl: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=800' },
@@ -92,7 +103,7 @@ const ProfilePage = () => {
                         <span className="ml-2">Edit Profile</span>
                     </button>
                     <button 
-                        onClick={logout}
+                        onClick={handleLogout}
                         className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors"
                     >
                         Log Out

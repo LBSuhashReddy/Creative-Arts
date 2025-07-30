@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './Navbar.css'; // Make sure the CSS file is imported.
 
 // --- Helper Icons for the Navbar ---
@@ -12,6 +13,18 @@ const UserIcon = () => (
 
 const Navbar = () => {
   const { currentUser, logout } = useAuth();
+
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/'); // Use navigate for redirection
+        } catch (error) {
+            console.error("Failed to log out", error);
+            // Optionally, show an error message to the user
+        }
+    };
 
   return (
     <nav className="navbar">
@@ -32,7 +45,7 @@ const Navbar = () => {
                 <a href="/profile" className="navbar-icon-link" aria-label="Profile">
                   <UserIcon />
                 </a>
-                <button onClick={logout} className="navbar-button">Logout</button>
+                <button onClick={handleLogout} className="navbar-button">Logout</button>
               </div>
             ) : (
               <a href="/login" className="navbar-button">Login</a>
