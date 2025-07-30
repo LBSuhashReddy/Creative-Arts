@@ -8,6 +8,7 @@ import RegisterPage from './pages/auth/RegisterPage'; // Import the new page
 import Artists from './pages/ArtistsPage';
 import ExhibitionPage from './pages/ExhibitionPage'
 import EventsPage from './pages/EventsPage'
+import ArtistProfilePage from './pages/ArtistProfilePage';
 
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
@@ -29,7 +30,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/artists" element={<Artists />} />
             {/* Add more routes here as needed */}
-            <Route path="/artists" element={<Artists />} />
+            <Route path="/artist/:artistId" element={<ArtistProfilePage />} />
             <Route path="/exhibition" element={<ExhibitionPage />} />
             <Route path="/events" element={<EventsPage />} />
 
