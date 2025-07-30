@@ -1,5 +1,5 @@
 import React from 'react';
-import ArtistCard from '../components/ArtistCard';
+import ArtistCard from '../components/specific/ArtistCard';
 
 const Artists = () => {
   // In a real application, this data would be fetched from your Firebase database.
