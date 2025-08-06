@@ -10,7 +10,7 @@ import ExhibitionPage from './pages/ExhibitionPage'
 import EventsPage from './pages/EventsPage'
 import ProfilePage from './pages/user/ProfilePage'
 import ArtistProfilePage from './pages/ArtistProfilePage';
-
+import InboxPage from './pages/user/InboxPage';
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
@@ -35,6 +35,7 @@ function App() {
             <Route path="/exhibition" element={<ExhibitionPage />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/inbox" element={<InboxPage />} />
 
           </Routes>
         </main>
