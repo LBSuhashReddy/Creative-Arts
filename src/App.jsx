@@ -11,6 +11,9 @@ import EventsPage from './pages/EventsPage'
 import ProfilePage from './pages/user/ProfilePage'
 import ArtistProfilePage from './pages/ArtistProfilePage';
 import InboxPage from './pages/user/InboxPage';
+import ProtectedRoute from './routes/ProtectedRoute';
+import AdminDashboardPage from './pages/admin/AdminDashboard';
+
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
@@ -28,6 +31,14 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminDashboardPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/artists" element={<ArtistsPage />} />
             {/* Add more routes here as needed */}
