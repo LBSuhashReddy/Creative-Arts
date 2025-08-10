@@ -11,10 +11,13 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" />;
   }
 
-  // 2. Check if the user has the required role
-  if (requiredRole && currentUser.role !== requiredRole) {
-    // If they don't have the role, redirect them to the homepage
-    return <Navigate to="/" />;
+  // 2. Check if a specific role is required for this route
+  if (requiredRole) {
+    // Check the 'role' field from the user's profile data
+    if (currentUser.role !== requiredRole) {
+      // If they don't have the required role, redirect them to the homepage
+      return <Navigate to="/" />;
+    }
   }
 
   // 3. If all checks pass, show the page
