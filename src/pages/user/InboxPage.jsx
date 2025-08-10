@@ -1,83 +1,128 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext'; // To identify the current user
+import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { listenToUserConversations, listenToMessages, sendMessage } from '../../services/chatService';
+import { getUserProfile } from '../../services/userService'; // Assuming you have a function to get a single user's profile
 
 // --- Helper Icons ---
 const SendIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
     </svg>
 );
 
-// --- Placeholder Data ---
-// In a real app, this would come from your AuthContext and Firestore
-const currentUserId = 'currentUser'; // A mock ID for the logged-in user
-const allUsers = {
-    'currentUser': { name: 'Jojo', avatarUrl: 'https://i.pravatar.cc/150?u=jojo' },
-    '1': { name: 'Suhas Kumar', avatarUrl: 'https://images.unsplash.com/photo-1557862921-37829c790f19?w=100' },
-    '2': { name: 'Priya Sharma', avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100' },
-};
-
-const conversationsData = [
-    {
-        id: 'conv1',
-        participantIds: ['currentUser', '2'], // Chat with Priya Sharma
-        messages: [
-            { id: 'msg1', text: 'Hi Priya, I love your "Azure Depths" piece! Is it still available?', senderId: 'currentUser', timestamp: '10:30 AM' },
-            { id: 'msg2', text: 'Hey Jojo! Thank you so much. Yes, it is!', senderId: '2', timestamp: '10:31 AM' },
-        ]
-    },
-    {
-        id: 'conv2',
-        participantIds: ['currentUser', '1'], // Chat with Suhas Kumar
-        messages: [
-            { id: 'msg3', text: 'Hey, are you free to collaborate on a project?', senderId: '1', timestamp: 'Yesterday' },
-        ]
-    }
-];
-
 // --- InboxPage Component ---
 const InboxPage = () => {
-    const [conversations, setConversations] = useState(conversationsData);
-    const [selectedConversationId, setSelectedConversationId] = useState(conversationsData[0].id);
+    const { currentUser } = useAuth();
+    const [conversations, setConversations] = useState([]);
+    const [selectedConversationId, setSelectedConversationId] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [participants, setParticipants] = useState({});
     const [newMessage, setNewMessage] = useState('');
+    const [loading, setLoading] = useState(true);
+    const messagesEndRef = useRef(null);
 
-    const selectedConversation = conversations.find(c => c.id === selectedConversationId);
+    // Effect to scroll to the bottom of the messages list
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
 
-    const handleSendMessage = (e) => {
-        e.preventDefault();
-        if (newMessage.trim() === '') return;
+    // Effect to listen for the user's conversations
+    useEffect(() => {
+        // If there's no user, stop loading and clear data.
+        if (!currentUser) {
+            setLoading(false);
+            return;
+        }
 
-        const message = {
-            id: `msg${Date.now()}`,
-            text: newMessage,
-            senderId: currentUserId,
-            timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        setLoading(true);
+        // This listener will run once and update in real-time
+        const unsubscribe = listenToUserConversations(currentUser.uid, async (convs) => {
+            // Handle the case where the user has no conversations
+            if (convs.length === 0) {
+                setConversations([]);
+                setParticipants({});
+                setLoading(false);
+                return;
+            }
+
+            // Fetch profile details for any participants we haven't seen before
+            const participantIds = convs.map(c => c.participantIds.find(id => id !== currentUser.uid));
+            const newParticipantIds = participantIds.filter(id => id && !participants[id]);
+
+            if (newParticipantIds.length > 0) {
+                const participantPromises = newParticipantIds.map(id => getUserProfile(id));
+                const profiles = await Promise.all(participantPromises);
+                
+                const newParticipants = {};
+                profiles.forEach((profile, index) => {
+                    if (profile) {
+                        newParticipants[newParticipantIds[index]] = profile;
+                    }
+                });
+                setParticipants(prev => ({ ...prev, ...newParticipants }));
+            }
+            
+            setConversations(convs);
+            // Automatically select the first conversation if none is selected
+            if (!selectedConversationId) {
+                setSelectedConversationId(convs[0].id);
+            }
+            setLoading(false);
+        });
+
+        // Cleanup the listener when the component unmounts or the user changes
+        return () => unsubscribe();
+    }, [currentUser]); // THE FIX: This effect ONLY re-runs if the currentUser changes.
+
+    // Effect to listen for messages in the selected conversation
+    useEffect(() => {
+        // If no conversation is selected, do nothing.
+        if (!selectedConversationId) {
+            setMessages([]);
+            return;
         };
 
-        // Update the state to simulate sending a message
-        const updatedConversations = conversations.map(conv => {
-            if (conv.id === selectedConversationId) {
-                return { ...conv, messages: [...conv.messages, message] };
-            }
-            return conv;
-        });
-        setConversations(updatedConversations);
-        setNewMessage('');
+        const unsubscribe = listenToMessages(selectedConversationId, setMessages);
+        return () => unsubscribe();
+    }, [selectedConversationId]);
+
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (newMessage.trim() === '' || !selectedConversationId) return;
+
+        const message = {
+            text: newMessage,
+            senderId: currentUser.uid,
+        };
+
+        try {
+            await sendMessage(selectedConversationId, message);
+            setNewMessage('');
+        } catch (error) {
+            console.error("Failed to send message:", error);
+            // Optionally, show an error to the user
+        }
     };
+
+    if (loading) {
+        return <div className="text-center py-20">Loading conversations...</div>;
+    }
+
+    const selectedConversation = conversations.find(c => c.id === selectedConversationId);
 
     return (
         <div className="container mx-auto h-[calc(100vh-8rem)]">
             <div className="bg-white rounded-2xl shadow-xl h-full flex">
                 {/* Left Column: Conversation List */}
-                <div className="w-1/3 border-r border-gray-200">
+                <div className="w-1/3 border-r border-gray-200 overflow-y-auto">
                     <div className="p-4 border-b border-gray-200">
                         <h2 className="text-2xl font-bold text-gray-800">Chats</h2>
                     </div>
                     <div>
-                        {conversations.map(conv => {
-                            const otherParticipantId = conv.participantIds.find(id => id !== currentUserId);
-                            const otherParticipant = allUsers[otherParticipantId];
-                            const lastMessage = conv.messages[conv.messages.length - 1];
+                        {conversations.length > 0 ? conversations.map(conv => {
+                            const otherParticipantId = conv.participantIds.find(id => id !== currentUser.uid);
+                            const otherParticipant = participants[otherParticipantId];
+                            const lastMessage = conv.lastMessage;
 
                             return (
                                 <div
@@ -87,14 +132,16 @@ const InboxPage = () => {
                                         selectedConversationId === conv.id ? 'bg-indigo-50' : 'hover:bg-gray-50'
                                     }`}
                                 >
-                                    <img src={otherParticipant.avatarUrl} alt={otherParticipant.name} className="w-12 h-12 rounded-full object-cover" />
-                                    <div className="ml-4 flex-grow">
-                                        <h3 className="font-bold text-gray-800">{otherParticipant.name}</h3>
-                                        <p className="text-sm text-gray-500 truncate">{lastMessage.text}</p>
+                                    <img src={otherParticipant?.profileImageUrl || 'https://i.pravatar.cc/150'} alt={otherParticipant?.name} className="w-12 h-12 rounded-full object-cover" />
+                                    <div className="ml-4 flex-grow overflow-hidden">
+                                        <h3 className="font-bold text-gray-800">{otherParticipant?.name || '...'}</h3>
+                                        <p className="text-sm text-gray-500 truncate">{lastMessage?.text || 'No messages yet'}</p>
                                     </div>
                                 </div>
                             );
-                        })}
+                        }) : (
+                            <p className="p-4 text-center text-gray-500">No conversations yet.</p>
+                        )}
                     </div>
                 </div>
 
@@ -104,25 +151,28 @@ const InboxPage = () => {
                         <>
                             {/* Chat Header */}
                             <div className="p-4 border-b border-gray-200 flex items-center">
-                                <img src={allUsers[selectedConversation.participantIds.find(id => id !== currentUserId)].avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
-                                <h3 className="ml-4 font-bold text-xl text-gray-800">{allUsers[selectedConversation.participantIds.find(id => id !== currentUserId)].name}</h3>
+                                <img src={participants[selectedConversation.participantIds.find(id => id !== currentUser.uid)]?.profileImageUrl || 'https://i.pravatar.cc/150'} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
+                                <h3 className="ml-4 font-bold text-xl text-gray-800">{participants[selectedConversation.participantIds.find(id => id !== currentUser.uid)]?.name}</h3>
                             </div>
 
                             {/* Messages Area */}
                             <div className="flex-grow p-6 overflow-y-auto">
                                 <div className="space-y-4">
-                                    {selectedConversation.messages.map(msg => (
-                                        <div key={msg.id} className={`flex ${msg.senderId === currentUserId ? 'justify-end' : 'justify-start'}`}>
+                                    {messages.map(msg => (
+                                        <div key={msg.id} className={`flex ${msg.senderId === currentUser.uid ? 'justify-end' : 'justify-start'}`}>
                                             <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                                                msg.senderId === currentUserId 
+                                                msg.senderId === currentUser.uid 
                                                 ? 'bg-indigo-600 text-white' 
                                                 : 'bg-gray-200 text-gray-800'
                                             }`}>
                                                 <p>{msg.text}</p>
-                                                <p className={`text-xs mt-1 ${msg.senderId === currentUserId ? 'text-indigo-200' : 'text-gray-500'} text-right`}>{msg.timestamp}</p>
+                                                <p className={`text-xs mt-1 ${msg.senderId === currentUser.uid ? 'text-indigo-200' : 'text-gray-500'} text-right`}>
+                                                    {msg.timestamp?.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) || ''}
+                                                </p>
                                             </div>
                                         </div>
                                     ))}
+                                    <div ref={messagesEndRef} />
                                 </div>
                             </div>
 

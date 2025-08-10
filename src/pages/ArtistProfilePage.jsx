@@ -1,15 +1,16 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import ArtCard from '../components/specific/ArtCard'; // Step 1: Import the reusable ArtCard
+import { useParams, useNavigate } from 'react-router-dom';
+import ArtCard from '../components/specific/ArtCard';
+import { useAuth } from '../contexts/AuthContext'; // Import useAuth
+import { findOrCreateChat } from '../services/chatService'; // Import the chat service function
 
 // --- Placeholder Database ---
-// This object simulates your database, mapping IDs to artist data.
 const allArtistsData = {
-  '1': { name: 'Suhas Kumar', domain: 'Digital Art', phone: '111-222-3333', email: 'suhas@email.com', quote: 'Art is a line around your thoughts.', avatarUrl: 'https://images.unsplash.com/photo-1557862921-37829c790f19?q=80&w=2071&auto=format&fit=crop', artworks: [ { id: 1, title: 'Crimson Bloom', imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800' }] },
-  '2': { name: 'Priya Sharma', domain: 'Photography', phone: '444-555-6666', email: 'priya@email.com', quote: 'Capturing moments from today, creating memories for tomorrow.', avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1887&auto=format&fit=crop', artworks: [ { id: 2, title: 'Azure Depths', imageUrl: 'https://images.unsplash.com/photo-1552353289-97f993ea0846?w=800' }] },
-  '3': { name: 'Raj Patel', domain: 'Sculpture', phone: '777-888-9999', email: 'raj@email.com', quote: 'Giving form to ideas, one piece at a time.', avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1887&auto=format&fit=crop', artworks: [ { id: 3, title: 'Golden Solitude', imageUrl: 'https://images.unsplash.com/photo-1531913423379-61763315a05f?w=800' }] },
-  '4': { name: 'Aisha Khan', designation: 'Alumni', domain: 'Illustrator', phone: '123-456-7890', email: 'aisha@email.com', quote: 'Drawing worlds with a single stroke.', avatarUrl: 'https://i.pravatar.cc/150?u=aisha', artworks: [] },
-  '5': { name: 'Leo Rivera', designation: 'Member', domain: 'Sculptor', phone: '098-765-4321', email: 'leo@email.com', quote: 'Finding the art within the stone.', avatarUrl: 'https://i.pravatar.cc/150?u=leo', artworks: [] },
+  '1': { uid: '1', name: 'Suhas Kumar', domain: 'Digital Art', phone: '111-222-3333', email: 'suhas@email.com', quote: 'Art is a line around your thoughts.', avatarUrl: 'https://images.unsplash.com/photo-15578G2921-37829c790f19?q=80&w=2071&auto=format&fit=crop', artworks: [ { id: 1, title: 'Crimson Bloom', imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800' }] },
+  '2': { uid: '2', name: 'Priya Sharma', domain: 'Photography', phone: '444-555-6666', email: 'priya@email.com', quote: 'Capturing moments from today, creating memories for tomorrow.', avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1887&auto=format&fit=crop', artworks: [ { id: 2, title: 'Azure Depths', imageUrl: 'https://images.unsplash.com/photo-1552353289-97f993ea0846?w=800' }] },
+  '3': { uid: '3', name: 'Raj Patel', domain: 'Sculpture', phone: '777-888-9999', email: 'raj@email.com', quote: 'Giving form to ideas, one piece at a time.', avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1887&auto=format&fit=crop', artworks: [ { id: 3, title: 'Golden Solitude', imageUrl: 'https://images.unsplash.com/photo-1531913423379-61763315a05f?w=800' }] },
+  '4': { uid: '4', name: 'Aisha Khan', designation: 'Alumni', domain: 'Illustrator', phone: '123-456-7890', email: 'aisha@email.com', quote: 'Drawing worlds with a single stroke.', avatarUrl: 'https://i.pravatar.cc/150?u=aisha', artworks: [] },
+  '5': { uid: '5', name: 'Leo Rivera', designation: 'Member', domain: 'Sculptor', phone: '098-765-4321', email: 'leo@email.com', quote: 'Finding the art within the stone.', avatarUrl: 'https://i.pravatar.cc/150?u=leo', artworks: [] },
 };
 
 
@@ -17,6 +18,31 @@ const allArtistsData = {
 const ArtistProfilePage = () => {
   const { artistId } = useParams();
   const artistData = allArtistsData[artistId];
+  const { currentUser } = useAuth(); // Get the currently logged-in user
+  const navigate = useNavigate(); // Hook for navigation
+
+  const handleStartChat = async () => {
+    if (!currentUser) {
+      // If no user is logged in, redirect to the login page
+      navigate('/login');
+      return;
+    }
+    
+    if (currentUser.uid === artistId) {
+        alert("You cannot start a chat with yourself.");
+        return;
+    }
+
+    try {
+      // Create the chat in Firestore
+      await findOrCreateChat(currentUser.uid, artistId);
+      // Redirect the user to their inbox
+      navigate('/inbox');
+    } catch (error) {
+      console.error("Failed to start chat:", error);
+      alert("Could not start a conversation. Please try again.");
+    }
+  };
 
   if (!artistData) {
     return (
@@ -49,7 +75,11 @@ const ArtistProfilePage = () => {
                 <p className="text-lg text-gray-600">Name: <span className="font-bold text-gray-800">{artistData.name}</span></p>
                 <p className="text-lg text-gray-600">Domain: <span className="font-bold text-gray-800">{artistData.domain}</span></p>
               </div>
-              <button className="mt-4 sm:mt-0 bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors duration-300 flex items-center">
+              {/* Updated Message Button */}
+              <button 
+                onClick={handleStartChat}
+                className="mt-4 sm:mt-0 bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors duration-300 flex items-center"
+              >
                 Message <span className="ml-2">▶</span>
               </button>
             </div>
@@ -77,14 +107,12 @@ const ArtistProfilePage = () => {
             </h2>
           </div>
           
-          {/* Step 2: Use the imported ArtCard component */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {artistData.artworks.map(art => (
               <ArtCard 
                 key={art.id} 
                 imageUrl={art.imageUrl} 
                 title={art.title}
-                // Pass other props if needed by the advanced card
                 artistName={artistData.name}
                 artistAvatarUrl={artistData.avatarUrl}
                 onViewDetails={() => alert(`Viewing details for ${art.title}`)}
