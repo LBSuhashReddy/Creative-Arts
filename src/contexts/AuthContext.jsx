@@ -2,7 +2,8 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { getUserProfile } from '../services/userService';
-import { loginUser, registerUser, logoutUser } from '../services/authService';
+// Step 1: Import ALL the necessary functions from your service
+import { loginUser, registerUser, logoutUser, publicRegister } from '../services/authService';
 
 
 const AuthContext = createContext();
@@ -28,10 +29,12 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
+  // Step 2: Add 'publicRegister' to the value provided by the context
   const value = {
     currentUser,
     login: loginUser,
-    register: registerUser,
+    register: registerUser, // This is for the admin "Add Artist" form
+    publicRegister: publicRegister, // This is for the public registration form
     logout: logoutUser
   };
 

@@ -13,6 +13,8 @@ import ArtistProfilePage from './pages/ArtistProfilePage';
 import InboxPage from './pages/user/InboxPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 import AdminDashboardPage from './pages/admin/AdminDashboard';
+import AddArtistPage from './pages/admin/AddArtistPage';
+import AddEventPage from './pages/admin/AddEventPage';
 
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
@@ -29,24 +31,61 @@ function App() {
         <Navbar />
         <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Routes>
+            {/* --- Public Routes (Visible to everyone) --- */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/exhibition" element={<ExhibitionPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/artists" element={<ArtistsPage />} />
+            <Route path="/artist/:artistId" element={<ArtistProfilePage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/admin"
+            <Route path="/register" element={<RegisterPage />} />
+
+            {/* --- Protected User Routes (Visible only to logged-in users) --- */}
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/inbox" 
+              element={
+                <ProtectedRoute>
+                  <InboxPage />
+                </ProtectedRoute>
+              } 
+            />
+
+            {/* --- Protected Admin Routes (Visible only to admins) --- */}
+            <Route 
+              path="/admin" 
               element={
                 <ProtectedRoute requiredRole="admin">
                   <AdminDashboardPage />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/artists" element={<ArtistsPage />} />
-            {/* Add more routes here as needed */}
-            <Route path="/artist/:artistId" element={<ArtistProfilePage />} />
-            <Route path="/exhibition" element={<ExhibitionPage />} />
-            <Route path="/events" element={<EventsPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/inbox" element={<InboxPage />} />
+            <Route 
+              path="/admin/add-event" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AddEventPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/add-artist" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AddArtistPage />
+                </ProtectedRoute>
+              } 
+            />
+
+            {/* --- Add a 404 Not Found page as a catch-all --- */}
+            {/* <Route path="*" element={<NotFoundPage />} /> */}
 
           </Routes>
         </main>
