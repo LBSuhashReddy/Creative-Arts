@@ -5,12 +5,13 @@ import { getStorage } from 'firebase/storage';
 
 // IMPORTANT: Replace with your own Firebase project's configuration values
 const firebaseConfig = {
-  apiKey: "AIzaSyDXybTgldEpkELOrOuOzt5PiFC9YCTuH1o",
-  authDomain: "creative-arts-b7801.firebaseapp.com",
-  projectId: "creative-arts-b7801",
-  storageBucket: "creative-arts-b7801.firebasestorage.app",
-  messagingSenderId: "781114312326",
-  appId: "1:781114312326:web:ca479854d8104c2ea8f307"
+  apiKey: "AIzaSyCX_ukIGb3SZmzQQX48UyXjSclHQXXFcA4",
+  authDomain: "creative-arts-vnr.firebaseapp.com",
+  projectId: "creative-arts-vnr",
+  storageBucket: "creative-arts-vnr.firebasestorage.app",
+  messagingSenderId: "19566482186",
+  appId: "1:19566482186:web:67a514c77e2690d8bd20f3",
+  measurementId: "G-WE5HGCCGM6"
 };
 
 // Initialize Firebase
