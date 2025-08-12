@@ -4,7 +4,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // IMPORTANT: Replace with your own Firebase project's configuration values
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyCX_ukIGb3SZmzQQX48UyXjSclHQXXFcA4",
   authDomain: "creative-arts-vnr.firebaseapp.com",
   projectId: "creative-arts-vnr",
