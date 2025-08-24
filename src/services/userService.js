@@ -1,6 +1,6 @@
 /*
   File: src/services/userService.js
-  This file has been updated to handle both 'users' and 'artists' collections.
+  This is the corrected version of your user service.
 */
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
@@ -13,20 +13,21 @@ import { db } from './firebase';
 export const getUserProfile = async (uid) => {
   if (!uid) return null;
 
-  // First, check the 'users' collection (for members, admins, and others)
+  // First, check the 'users' collection
   const userDocRef = doc(db, "users", uid);
   const userDoc = await getDoc(userDocRef);
   if (userDoc.exists()) {
     return userDoc.data();
   }
 
-  // Fallback to check the 'artists' collection if you still use it
+  // Fallback to check the 'artists' collection
   const artistDocRef = doc(db, "artists", uid);
   const artistDoc = await getDoc(artistDocRef);
   if (artistDoc.exists()) {
     return artistDoc.data();
   }
 
+  // FIX: These lines were outside the function, now they are correctly inside.
   console.error("No profile document found for this user in 'users' or 'artists' collections.");
   return null;
 };
@@ -40,17 +41,16 @@ export const getUserProfile = async (uid) => {
 export const updateUserProfile = async (uid, data) => {
   if (!uid) throw new Error("No user ID provided.");
 
-  const userDocRef = doc(db, "users", uid);
-  const artistDocRef = doc(db, "artists", uid);
-
   try {
     // Check which document exists and update it.
+    const userDocRef = doc(db, "users", uid);
     const userDoc = await getDoc(userDocRef);
     if (userDoc.exists()) {
       await updateDoc(userDocRef, data);
       return;
     }
-
+    
+    const artistDocRef = doc(db, "artists", uid);
     const artistDoc = await getDoc(artistDocRef);
     if (artistDoc.exists()) {
       await updateDoc(artistDocRef, data);

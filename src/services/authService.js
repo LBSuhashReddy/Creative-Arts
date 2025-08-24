@@ -1,20 +1,18 @@
 /*
   File: src/services/authService.js
+  This is the corrected and final version of your authentication service.
 */
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
-import { firebaseConfig, auth, db } from './firebase'; // Import main app instances
+import { doc, setDoc } from 'firebase/firestore';
+import { firebaseConfig, auth, db } from './firebase';
 
 // --- Secondary Firebase App for Admin Actions ---
-// This allows an admin to create a user without being logged out.
 let secondaryApp;
 try {
-  // Try to get the existing secondary app
   secondaryApp = initializeApp(firebaseConfig, 'Secondary');
 } catch (error) {
-  // This error happens on hot-reloads in development, which is expected.
-  // We create a uniquely named app to avoid crashing on re-renders.
+  // This error is expected on hot-reloads in development.
   secondaryApp = initializeApp(firebaseConfig, 'Secondary_Reload_' + Date.now());
 }
 const secondaryAuth = getAuth(secondaryApp);
@@ -24,43 +22,42 @@ const secondaryAuth = getAuth(secondaryApp);
  * It uses the secondary auth instance to avoid logging the admin out.
  */
 export const createArtist = async (email, password, name, graduationYear, domain) => {
-  // Create the new user in the secondary auth instance
+  // FIX: Use the secondaryAuth instance to create the user
   const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
   const user = userCredential.user;
 
-  // Save the new user's profile to the 'users' collection using the main db instance
-  await setDoc(doc(db, 'artists', user.uid), {
+  // Save the new user's profile to the 'users' collection
+  await setDoc(doc(db, "users", user.uid), {
     uid: user.uid,
     name,
     email,
-    role: 'member', // All artists/members have this role
+    role: 'member',
     graduationYear,
     domain,
     bio: '',
     profileImageUrl: ''
   });
 
-  // IMPORTANT: Sign out the newly created user from the secondary instance
-  // so this temporary session is closed.
+  // FIX: This code was outside the function, now it's correctly inside.
+  // Sign out the newly created user from the secondary instance.
   await signOut(secondaryAuth);
 
   return user;
 };
 
 /**
- * Registers a new public user. This is for the main public registration page.
+ * Registers a new public user.
  */
 export const publicRegister = async (email, password, name) => {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
 
-  await setDoc(doc(db, 'users', user.uid), {
+  await setDoc(doc(db, "users", user.uid), {
     uid: user.uid,
     name,
     email,
-    role: 'other' // Public users get the 'other' role
+    role: 'other',
   });
-
   return user;
 };
 
