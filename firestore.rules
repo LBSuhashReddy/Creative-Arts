@@ -3,28 +3,22 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Rule for the 'users' collection
-    match /users/{userId} {
-      // Allow anyone to read any user's profile.
+    // This rule allows an admin to create artist profiles
+    match /artists/{userId} {
       allow read: if true;
-
-      // Only allow a logged-in user to update THEIR OWN profile document.
       allow update: if request.auth != null && request.auth.uid == userId;
 
-      // Allow a logged-in user to create their own profile document.
-      allow create: if request.auth != null && request.auth.uid == userId;
+      // NEW RULE: Allow create if the user making the request is an admin.
+      // This checks the 'role' field in the admin's own user document.
+      allow create: if request.auth != null &&
+                    get(/databases/$(database)/documents/artists/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Rule for the 'artists' collection
-    match /artists/{userId} {
-      // Allow anyone to read any artist's profile.
+    // This rule is for public users and admins
+    match /users/{userId} {
       allow read: if true;
-
-      // Only allow a logged-in user to update THEIR OWN profile document.
       allow update: if request.auth != null && request.auth.uid == userId;
-      
-      // Allow a logged-in user to create their own profile document.
-      allow create: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null;
     }
   }
 }
