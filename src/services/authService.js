@@ -26,19 +26,18 @@ export const createArtist = async (email, password, name, graduationYear, domain
   const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
   const user = userCredential.user;
 
-  // Save the new user's profile to the 'users' collection
-  await setDoc(doc(db, "users", user.uid), {
+  // FIX: Save the new user's profile to the 'users' collection
+  await setDoc(doc(db, "artists", user.uid), {
     uid: user.uid,
     name,
     email,
-    role: 'member',
+    role: 'member', // Use the 'member' role to identify artists
     graduationYear,
     domain,
     bio: '',
     profileImageUrl: ''
   });
 
-  // FIX: This code was outside the function, now it's correctly inside.
   // Sign out the newly created user from the secondary instance.
   await signOut(secondaryAuth);
 
