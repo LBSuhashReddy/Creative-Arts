@@ -3,7 +3,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { getUserProfile } from '../services/userService';
 // Step 1: Import ALL the necessary functions from your service
-import { loginUser, registerUser, logoutUser, publicRegister } from '../services/authService';
+import { loginUser, createArtist, logoutUser, publicRegister } from '../services/authService';
 
 
 const AuthContext = createContext();
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     currentUser,
     login: loginUser,
-    register: registerUser, // This is for the admin "Add Artist" form
+    register: createArtist, // This is for the admin "Add Artist" form
     publicRegister: publicRegister, // This is for the public registration form
     logout: logoutUser
   };

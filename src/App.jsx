@@ -15,6 +15,7 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import AdminDashboardPage from './pages/admin/AdminDashboard';
 import AddArtistPage from './pages/admin/AddArtistPage';
 import AddEventPage from './pages/admin/AddEventPage';
+import EditProfilePage from './pages/user/EditProfile';
 
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
@@ -46,6 +47,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/edit-profile" 
+              element={
+                <ProtectedRoute>
+                  <EditProfilePage />
                 </ProtectedRoute>
               } 
             />

@@ -1,5 +1,6 @@
 rules_version = '2';
 
+<<<<<<< HEAD
 // Craft rules based on data in your Firestore database
 // allow write: if firestore.get(
 //    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
@@ -10,3 +11,18 @@ service firebase.storage {
     }
   }
 }
+=======
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow users to read, write, and delete files in a folder matching their own UID
+    match /profile-pictures/{userId}/{allPaths=**} {
+      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    // You can add similar rules for event images, etc.
+    match /event-images/{allPaths=**} {
+        allow read; // Allow anyone to read event images
+        allow write: if request.auth != null; // Allow any logged-in user to write (you might want to restrict this to admins)
+    }
+  }
+}
+>>>>>>> 18a2ba6ac59efbeb7e0b31a9cdad556221b1d8ce

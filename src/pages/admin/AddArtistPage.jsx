@@ -1,10 +1,11 @@
 /*
   File: src/pages/admin/AddArtistPage.jsx
-  This is the detailed form for ADMINS to add new artists.
+  This is the corrected form that uses the correct admin-safe function.
 */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+// Step 1: Import the correct function directly from the service, NOT from useAuth.
+import { createArtist } from '../../services/authService'; 
 
 const AddArtistPage = () => {
   const [email, setEmail] = useState('');
@@ -14,8 +15,6 @@ const AddArtistPage = () => {
   const [domain, setDomain] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const { register } = useAuth(); // This is the original 'registerUser' function
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,7 +22,8 @@ const AddArtistPage = () => {
     setError('');
     setLoading(true);
     try {
-      await register(email, password, name, Number(graduationYear), domain);
+      // Step 2: Call the admin-safe 'createArtist' function here.
+      await createArtist(email, password, name, Number(graduationYear), domain);
       alert(`Artist ${name} created successfully!`);
       navigate('/admin'); // Redirect back to the admin dashboard
     } catch (err) {
@@ -39,6 +39,7 @@ const AddArtistPage = () => {
         <h2 className="text-2xl font-bold text-center mb-6">Add New Artist</h2>
         {error && <p className="bg-red-100 text-red-700 p-3 rounded-md mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
+          {/* Form fields remain the same */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
               Full Name
