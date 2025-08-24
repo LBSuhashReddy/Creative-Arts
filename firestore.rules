@@ -2,15 +2,29 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow users to read and update their own profile document
+
+    // Rule for the 'users' collection
     match /users/{userId} {
-      allow read, update: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null; // Allow any authenticated user to create their profile
+      // Allow anyone to read any user's profile.
+      allow read: if true;
+
+      // Only allow a logged-in user to update THEIR OWN profile document.
+      allow update: if request.auth != null && request.auth.uid == userId;
+
+      // Allow a logged-in user to create their own profile document.
+      allow create: if request.auth != null && request.auth.uid == userId;
     }
-    // Add rules for your other collections as needed
-    match /events/{eventId} {
-        allow read; // Allow anyone to read events
-        allow create: if request.auth != null; // Allow any logged-in user to create events (restrict to admins later)
+
+    // Rule for the 'artists' collection
+    match /artists/{userId} {
+      // Allow anyone to read any artist's profile.
+      allow read: if true;
+
+      // Only allow a logged-in user to update THEIR OWN profile document.
+      allow update: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow a logged-in user to create their own profile document.
+      allow create: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
