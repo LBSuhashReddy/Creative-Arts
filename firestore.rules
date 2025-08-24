@@ -3,22 +3,31 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows an admin to create artist profiles
+    // Rule for the 'artists' collection
     match /artists/{userId} {
       allow read: if true;
       allow update: if request.auth != null && request.auth.uid == userId;
-
-      // NEW RULE: Allow create if the user making the request is an admin.
-      // This checks the 'role' field in the admin's own user document.
       allow create: if request.auth != null &&
-                    get(/databases/$(database)/documents/artists/$(request.auth.uid)).data.role == 'admin';
+                        get(/databases/$(database)/documents/artists/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // This rule is for public users and admins
+    // Rule for the 'users' collection
     match /users/{userId} {
       allow read: if true;
       allow update: if request.auth != null && request.auth.uid == userId;
       allow create: if request.auth != null;
+    }
+
+    // --- NEW RULE FOR EVENTS ---
+    // This rule allows an admin to create events.
+    match /events/{eventId} {
+      // Anyone can read the list of events.
+      allow read: if true;
+
+      // Only allow a user to create an event if their profile in the 'users'
+      // collection has the role of 'admin'.
+      allow create: if request.auth != null &&
+                        get(/databases/$(database)/documents/artists/$(request.auth.uid)).data.role == 'admin';
     }
   }
 }
