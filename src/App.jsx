@@ -5,17 +5,18 @@ import Navbar from './components/layout/Navbar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage'; // Import the new page
-import ArtistsPage from './pages/ArtistsPage';
+import ArtistsPage from './pages/artists/ArtistsPage';
 import ExhibitionPage from './pages/ExhibitionPage'
 import EventsPage from './pages/EventsPage'
-import ProfilePage from './pages/user/ProfilePage'
-import ArtistProfilePage from './pages/ArtistProfilePage';
+import ArtistProfilePage from './pages/artists/ArtistProfilePage'
 import InboxPage from './pages/user/InboxPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 import AdminDashboardPage from './pages/admin/AdminDashboard';
 import AddArtistPage from './pages/admin/AddArtistPage';
 import AddEventPage from './pages/admin/AddEventPage';
 import EditProfilePage from './pages/user/EditProfile';
+import DedicatedArtistPage from './pages/artists/DedicatedArtistPage';
+import UserProfilePage from './pages/user/UserProfilePage';
 
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
@@ -37,19 +38,35 @@ function App() {
             <Route path="/exhibition" element={<ExhibitionPage />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/artists" element={<ArtistsPage />} />
-            <Route path="/artist/:artistId" element={<ArtistProfilePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
 
             {/* --- Protected User Routes (Visible only to logged-in users) --- */}
             <Route 
-              path="/profile" 
+              path="/artist-profile" 
               element={
                 <ProtectedRoute>
-                  <ProfilePage />
+                  <ArtistProfilePage />
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/user-profile" 
+              element={
+                <ProtectedRoute>
+                  <UserProfilePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/artist/:artistId" 
+              element={
+                <ProtectedRoute>
+                  <DedicatedArtistPage />
+                </ProtectedRoute>
+              } 
+            />
+            
             <Route 
               path="/edit-profile" 
               element={

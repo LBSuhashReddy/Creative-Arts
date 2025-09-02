@@ -23,6 +23,11 @@ service cloud.firestore {
       allow read: if true;
       allow update: if request.auth != null && request.auth.uid == userId;
       allow create: if request.auth != null;
+      
+      match /wishlist/{wishlistId} {
+        // A user can read, write, and delete items from their OWN wishlist
+        allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+      }
     }
 
     // --- RULE FOR EVENTS ---

@@ -21,6 +21,11 @@ const HeartIcon = () => (
 );
 
 
+const onAddToWishlist = (e) => {
+              e.stopPropagation(); // Prevents other click events on the card from firing
+              if (onAddToWishlist) onAddToWishlist();
+            };
+
 // --- Redesigned ArtCard Component ---
 const ArtCard = ({ imageUrl, title, artistName, artistAvatarUrl, price, onViewDetails, onInquire, onAddToWishlist }) => {
   return (

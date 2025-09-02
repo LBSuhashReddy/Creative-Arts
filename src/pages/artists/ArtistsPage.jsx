@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getAllArtists } from '../services/userService'; // Import the new function
+import { getAllArtists } from '../../services/userService'; // Import the new function
 
 // --- Reusable Components (assuming they exist elsewhere) ---
 const SearchBar = ({ placeholder, value, onChange }) => (

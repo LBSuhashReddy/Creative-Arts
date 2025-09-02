@@ -2,7 +2,7 @@
   File: src/services/userService.js
   This file has been updated to handle both 'users' and 'artists' collections.
 */
-import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, query, where, getDocs, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from './firebase';
 
 /**
@@ -88,3 +88,42 @@ export const getAllArtists = async () => {
   }
 };
 
+
+export const getWishlistForUser = async (userId) => {
+  if (!userId) return [];
+  try {
+    // A user's wishlist is stored in a subcollection under their document
+    const wishlistCollectionRef = collection(db, 'users', userId, 'wishlist');
+    const querySnapshot = await getDocs(wishlistCollectionRef);
+    
+    const wishlistItems = [];
+    querySnapshot.forEach((doc) => {
+      wishlistItems.push({ id: doc.id, ...doc.data() });
+    });
+    
+    return wishlistItems;
+  } catch (error) {
+    console.error("Error fetching user wishlist: ", error);
+    return [];
+  }
+};
+
+export const addToWishlist = async (userId, artwork) => {
+  if (!userId) {
+    throw new Error("You must be logged in to add items to a wishlist.");
+  }
+  if (!artwork || !artwork.id) {
+    throw new Error("Invalid artwork data provided.");
+  }
+
+  try {
+    const wishlistDocRef = doc(db, 'users', userId, 'wishlist', artwork.id);
+    await setDoc(wishlistDocRef, {
+      ...artwork,
+      addedAt: Timestamp.now()
+    });
+  } catch (error) {
+    console.error("Error adding item to wishlist: ", error);
+    throw new Error("Could not add item to your wishlist.");
+  }
+};
