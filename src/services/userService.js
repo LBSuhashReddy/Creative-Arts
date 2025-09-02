@@ -1,8 +1,8 @@
 /*
   File: src/services/userService.js
-  This is the corrected version of your user service.
+  This file has been updated to handle both 'users' and 'artists' collections.
 */
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 
 /**
@@ -13,21 +13,20 @@ import { db } from './firebase';
 export const getUserProfile = async (uid) => {
   if (!uid) return null;
 
-  // First, check the 'users' collection
+  // First, check the 'users' collection (for members, admins, and others)
   const userDocRef = doc(db, "users", uid);
   const userDoc = await getDoc(userDocRef);
   if (userDoc.exists()) {
     return userDoc.data();
   }
 
-  // Fallback to check the 'artists' collection
+  // Fallback to check the 'artists' collection if you still use it
   const artistDocRef = doc(db, "artists", uid);
   const artistDoc = await getDoc(artistDocRef);
   if (artistDoc.exists()) {
     return artistDoc.data();
   }
 
-  // FIX: These lines were outside the function, now they are correctly inside.
   console.error("No profile document found for this user in 'users' or 'artists' collections.");
   return null;
 };
@@ -63,3 +62,29 @@ export const updateUserProfile = async (uid, data) => {
     throw new Error("Could not update profile.");
   }
 };
+
+/**
+ * Fetches all artists from the 'artists' collection.
+ * @returns {Promise<Array>} A promise that resolves to an array of artist objects.
+ */
+export const getAllArtists = async () => {
+  try {
+    // Query for members/admins in the 'artists' collection
+    const artistsQuery = query(collection(db, 'artists'), where('role', 'in', ['member', 'admin']));
+    
+    const querySnapshot = await getDocs(artistsQuery);
+    
+    const artists = [];
+    querySnapshot.forEach((doc) => {
+      artists.push({ id: doc.id, ...doc.data() });
+    });
+    
+    return artists;
+
+  } catch (error) {
+    console.error("Error fetching all artists: ", error);
+    // This is where you would see a "Missing Index" error in the console.
+    return []; // Return an empty array in case of an error
+  }
+};
+

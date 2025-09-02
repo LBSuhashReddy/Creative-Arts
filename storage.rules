@@ -1,29 +1,21 @@
 rules_version = '2';
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-// Craft rules based on data in your Firestore database
-// allow write: if firestore.get(
-//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
 service firebase.storage {
   match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read, write: if false;
-    }
-  }
-}
-=======
-=======
->>>>>>> 1f31f7fbfc89784bf20cb6590041997b1d278969
-service firebase.storage {
-  match /b/{bucket}/o {
+    // Rule for profile pictures
     match /profile-pictures/{userId}/{allPaths=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
+    
+    // Rule for event images
     match /event-images/{allPaths=**} {
-        allow read;
-        allow write: if request.auth != null;
+      allow read;
+      allow write: if request.auth != null; // Should be restricted to admins
+    }
+    
+    // Rule for artwork images
+    match /artworks/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
->>>>>>> 18a2ba6ac59efbeb7e0b31a9cdad556221b1d8ce
