@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "creative-arts-vnr"
-  }
+    "default": "creative-arts-vnr",
+    "creative-arts": "creative-arts-vnr"
+  },
+  "targets": {},
+  "etags": {}
 }

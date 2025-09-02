@@ -1,3 +1,7 @@
+/*
+  File: firestore.rules
+  Updated rules to secure all collections.
+*/
 rules_version = '2';
 
 service cloud.firestore {
@@ -7,8 +11,11 @@ service cloud.firestore {
     match /artists/{userId} {
       allow read: if true;
       allow update: if request.auth != null && request.auth.uid == userId;
+
+      // Rule: Allow create if the user making the request is an admin.
+      // This now checks the 'artists' collection for the admin's role.
       allow create: if request.auth != null &&
-                        get(/databases/$(database)/documents/artists/$(request.auth.uid)).data.role == 'admin';
+                      get(/databases/$(database)/documents/artists/$(request.auth.uid)).data.role == 'admin';
     }
 
     // Rule for the 'users' collection
@@ -18,16 +25,26 @@ service cloud.firestore {
       allow create: if request.auth != null;
     }
 
-    // --- NEW RULE FOR EVENTS ---
-    // This rule allows an admin to create events.
+    // --- RULE FOR EVENTS ---
     match /events/{eventId} {
       // Anyone can read the list of events.
       allow read: if true;
 
-      // Only allow a user to create an event if their profile in the 'users'
-      // collection has the role of 'admin'.
+      // Only an admin can create new events.
+      // This now also checks the 'artists' collection for the admin's role.
       allow create: if request.auth != null &&
-                        get(/databases/$(database)/documents/artists/$(request.auth.uid)).data.role == 'admin';
+                      get(/databases/$(database)/documents/artists/$(request.auth.uid)).data.role == 'admin';
+    }
+    match /artworks/{artworkId} {
+      // Anyone can read artworks
+      allow read: if true;
+      
+      // A user can create an artwork if they are logged in and the
+      // 'artistId' in the new document matches their own user ID.
+      allow create: if request.auth != null && request.resource.data.artistId == request.auth.uid;
+      
+      // A user can update or delete an artwork if they are the owner.
+      allow update, delete: if request.auth != null && get(/databases/$(database)/documents/artworks/$(artworkId)).data.artistId == request.auth.uid;
     }
   }
 }

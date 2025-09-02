@@ -1,0 +1,29 @@
+[33m578e1ef[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msuhas[m[33m, [m[1;31morigin/kushal[m[33m)[m added events from database and logo
+[33m5cde724[m added AdminDashboard page
+[33mc2a0f7e[m[33m ([m[1;31morigin/suhas[m[33m)[m InboxPage
+[33m8327a4b[m fixed artistProfilePage routing
+[33m507b30b[m fixed logout bug in navbar and profile
+[33m4aa9298[m resolved merge conflicts
+[33mbbcf137[m Merge branch 'suhas' of https://github.com/LBSuhashReddy/Creative-Arts into kushal
+[33m0900eef[m added UserProfilePage
+[33m18faf83[m ProfilrPage
+[33m162fd1f[m added ArtistProfilePage route
+[33m5dea5d9[m added artist profile page
+[33m47103be[m EventsPage
+[33m4abff5f[m made chnages in App.jsx
+[33m2883b54[m Merge branch 'suhas' of https://github.com/LBSuhashReddy/Creative-Arts into kushal
+[33m7c9171e[m Added ExhibitionCard
+[33m9aaa693[m added ArtistCard and updated Artits Page
+[33meddee5a[m Merge branch 'kushal' of https://github.com/LBSuhashReddy/Creative-Arts into suhas
+[33mb97f52f[m added artits
+[33m98d769d[m Merge branch 'suhas' of https://github.com/LBSuhashReddy/Creative-Arts into kushal
+[33mba360a4[m added Artists Page
+[33m29ebb36[m Exhibition
+[33mb2821bc[m fixed error in register page by adding routes.
+[33ma1acd7e[m merged suhas and kushal
+[33m68aae80[m HomePage
+[33m84453ad[m Merge pull request #2 from LBSuhashReddy/suhas
+[33m2cc866c[m added home
+[33m2878218[m[33m ([m[1;31morigin/main[m[33m)[m Merge pull request #1 from LBSuhashReddy/kushal
+[33mdc0b0a1[m added components folder
+[33mcb9308d[m[33m ([m[1;32mmain[m[33m)[m Initialize project using Create React App

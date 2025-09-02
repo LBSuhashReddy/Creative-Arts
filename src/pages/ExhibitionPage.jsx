@@ -1,23 +1,35 @@
-import React, { useState } from 'react';
-import SearchBar from '../components/common/SearchBar'; // Assuming SearchBar exists
-import ArtCard from '../components/specific/ArtCard'; // Now correctly importing the component
+/*
+  File: src/pages/ExhibitionPage.jsx
+  This component is now updated to fetch live data from Firestore.
+*/
+import React, { useState, useEffect } from 'react';
+import SearchBar from '../components/common/SearchBar';
+import ArtCard from '../components/specific/ArtCard';
+import { getArtworksForSale } from '../services/artworkService'; // Import the correct service function
 
-// --- Manual Data ---
-const manualArtworks = [
-  { id: 1, title: 'Crimson Bloom', artistName: 'Eleanor Vance', price: '250', imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800', artistAvatarUrl: 'https://i.pravatar.cc/150?u=eleanor' },
-  { id: 2, title: 'Azure Depths', artistName: 'Marco Diaz', price: '450', imageUrl: 'https://images.unsplash.com/photo-1552353289-97f993ea0846?w=800', artistAvatarUrl: 'https://i.pravatar.cc/150?u=marco' },
-  { id: 3, title: 'Golden Solitude', artistName: 'Aisha Khan', price: '320', imageUrl: 'https://images.unsplash.com/photo-1531913423379-61763315a05f?w=800', artistAvatarUrl: 'https://i.pravatar.cc/150?u=aisha' },
-  { id: 4, title: 'Veridian Echo', artistName: 'Leo Rivera', price: '180', imageUrl: 'https://images.unsplash.com/photo-1506878206813-bb2154d4a210?w=800', artistAvatarUrl: 'https://i.pravatar.cc/150?u=leo' },
-];
-
-// --- ExhibitionPage Component ---
 const ExhibitionPage = () => {
+  const [artworks, setArtworks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredArtworks = manualArtworks.filter(art => 
+  useEffect(() => {
+    const fetchArtworks = async () => {
+      setLoading(true);
+      const data = await getArtworksForSale();
+      setArtworks(data);
+      setLoading(false);
+    };
+    fetchArtworks();
+  }, []);
+
+  const filteredArtworks = artworks.filter(art => 
     art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     art.artistName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) {
+    return <div className="text-center py-20 text-xl font-semibold">Loading Exhibition...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -29,11 +41,11 @@ const ExhibitionPage = () => {
       <SearchBar 
         placeholder="Search by artwork or artist..."
         value={searchQuery}
-        onChange={setSearchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
       />
       
       {filteredArtworks.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
           {filteredArtworks.map((art) => (
             <ArtCard
               key={art.id}
@@ -42,16 +54,13 @@ const ExhibitionPage = () => {
               artistName={art.artistName}
               artistAvatarUrl={art.artistAvatarUrl}
               price={art.price}
-              onViewDetails={() => alert(`Viewing details for ${art.title}`)}
-              onAddToWishlist={() => alert(`${art.title} added to your wishlist!`)}
-              onInquire={() => alert(`Inquiring about ${art.title}`)}
             />
           ))}
         </div>
       ) : (
         <div className="text-center py-10">
-          <h2 className="text-2xl font-semibold text-gray-700">No artwork found.</h2>
-          <p className="text-gray-500 mt-2">Try adjusting your search terms.</p>
+          <h2 className="text-2xl font-semibold text-gray-700">No artwork is currently for sale.</h2>
+          <p className="text-gray-500 mt-2">Please check back later!</p>
         </div>
       )}
     </div>
