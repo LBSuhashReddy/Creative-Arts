@@ -41,7 +41,7 @@ const Navbar = () => {
             {/* Conditional rendering for logged-in users */}
             {currentUser ? (
               <div className="flex items-center space-x-2">
-                <a href={currentUser.role == "member"?"/artist-profile":"/user-profile"} className="navbar-icon-link" aria-label="Profile">
+                <a href={currentUser.role == "member" || currentUser.role == "admin"?"/artist-profile":"/user-profile"} className="navbar-icon-link" aria-label="Profile">
                   <UserIcon />
                 </a>
                 <button onClick={handleLogout} className="navbar-button">Logout</button>
