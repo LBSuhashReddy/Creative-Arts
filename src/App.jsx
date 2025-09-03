@@ -110,7 +110,14 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            <Route path="/admin/bulk-add" element={<BulkAddPage />} />
+            <Route 
+              path="/admin/bulk-add" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <BulkAddPage />
+                </ProtectedRoute>
+              } 
+            />
 
             {/* --- Add a 404 Not Found page as a catch-all --- */}
             {/* <Route path="*" element={<NotFoundPage />} /> */}
