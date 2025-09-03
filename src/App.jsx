@@ -16,6 +16,7 @@ import AdminDashboardPage from './pages/admin/AdminDashboard';
 import AddArtistPage from './pages/admin/AddArtistPage';
 import AddEventPage from './pages/admin/AddEventPage';
 import EditProfilePage from './pages/user/EditProfile';
+import BulkAddPage from './pages/admin/BulkAddPage';
 
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
@@ -92,6 +93,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route path="/admin/bulk-add" element={<BulkAddPage />} />
 
             {/* --- Add a 404 Not Found page as a catch-all --- */}
             {/* <Route path="*" element={<NotFoundPage />} /> */}

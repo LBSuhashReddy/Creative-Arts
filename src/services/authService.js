@@ -26,7 +26,7 @@ export const createArtist = async (email, password, name, graduationYear, domain
   const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
   const user = userCredential.user;
 
-  // FIX: Save the new user's profile to the 'users' collection
+  // FIX: Save the new user's profile to the 'artists' collection
   await setDoc(doc(db, "artists", user.uid), {
     uid: user.uid,
     name,
