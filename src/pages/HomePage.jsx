@@ -117,7 +117,7 @@ const HomePage = () => {
               {/* Card 1 */}
               <div ref={highlightCard1Ref} className="fade-in-up bg-white p-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
                 <EventsIllustration />
-                <h3 className="text-xl font-bold mt-4">Events</h3>
+                <h3 className="text-xl font-bold mt-4">Events !</h3>
               </div>
               {/* Card 2 */}
               <div ref={highlightCard2Ref} className="fade-in-up bg-white p-6 rounded-2xl shadow-lg transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-2" style={{ transitionDelay: '150ms' }}>
