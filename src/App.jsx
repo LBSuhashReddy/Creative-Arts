@@ -17,6 +17,7 @@ import AddEventPage from './pages/admin/AddEventPage';
 import EditProfilePage from './pages/user/EditProfile';
 import DedicatedArtistPage from './pages/artists/DedicatedArtistPage';
 import UserProfilePage from './pages/user/UserProfilePage';
+import BulkAddPage from './pages/admin/BulkAddPage';
 
 const Footer = () => (
   <footer className="bg-gray-100 mt-12">
@@ -109,6 +110,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route path="/admin/bulk-add" element={<BulkAddPage />} />
 
             {/* --- Add a 404 Not Found page as a catch-all --- */}
             {/* <Route path="*" element={<NotFoundPage />} /> */}
